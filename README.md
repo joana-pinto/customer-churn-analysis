@@ -132,10 +132,10 @@ This analysis directly addresses these challenges through data-driven customer i
 
 | Segment | Customer Count | Churn Rate | Annual Revenue at Risk | Priority |
 |---------|----------------|-----------|------------------------|----------|
-| Critical Risk (MTM + Fiber + <6mo) | 575 | 75% | $2.2M | 🔴 Immediate |
-| High Risk (MTM + Fiber/E-check) | 2,096 | 55% | $1.8M | 🟠 High |
-| Medium Risk (Various combos) | 2,107 | 25% | $800K | 🟡 Medium |
-| Low Risk / Loyal (2-year/1-year + DSL) | 2,265 | 8% | $300K | 🟢 Monitor |
+| Critical Risk (MTM + Fiber + <6mo) | 575 | 75% | $2.2M |  Immediate |
+| High Risk (MTM + Fiber/E-check) | 2,096 | 55% | $1.8M |  High |
+| Medium Risk (Various combos) | 2,107 | 25% | $800K |  Medium |
+| Low Risk / Loyal (2-year/1-year + DSL) | 2,265 | 8% | $300K |  Monitor |
 
 **Total Revenue at Risk:** $4.9M annually from customers with elevated churn probability
 
