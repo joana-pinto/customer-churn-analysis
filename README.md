@@ -282,7 +282,7 @@ customer-churn-analysis/
 │   └── ChurnAnalysisDashboard.pbix            # Power BI dashboard file
 │
 ├── data/
-│   ├── Telco-Customer-Churn.csv               # Raw dataset
+│   ├── churn_data_raw.csv                     # Raw dataset
 │   └── churn_data_cleaned.csv                 # Processed dataset
 │
 └── images/
