@@ -2,7 +2,7 @@
 # Centralizes file paths and reusable parameters for reproducibility
 
 # File paths
-RAW_DATA_PATH = "data/Telco-Customer-Churn.csv"
+RAW_DATA_PATH = "data/churn_data_raw.csv"
 CLEANED_DATA_PATH = "data/churn_data_cleaned.csv"
 DB_PATH = "sql/churn.db"
 

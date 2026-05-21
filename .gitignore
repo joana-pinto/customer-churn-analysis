@@ -216,3 +216,12 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Jupyter checkpoints
+.ipynb_checkpoints/
+
+# Temporary notebooks
+Untitled*.ipynb
+
+# SQLite databases
+*.db
