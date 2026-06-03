@@ -1,8 +1,8 @@
 # Customer Churn Analysis: Revenue Protection Through Data-Driven Retention Strategy
 
-**A comprehensive business analytics case study identifying churn drivers, quantifying revenue exposure, and enabling strategic customer retention interventions.**
+**An end-to-end business analytics project identifying churn-associated patterns, quantifying revenue exposure, and translating customer data into actionable retention strategies.**
 
-This project demonstrates end-to-end business analytics capabilities, translating customer behavioral data into actionable retention strategies that protect recurring revenue and maximize customer lifetime value in subscription-based businesses.
+This project analyzes telecommunications customer churn using data quality validation, exploratory analysis, statistical testing, multivariate modeling, SQL-based business analytics, and customer segmentation. The objective is to move beyond descriptive churn reporting and build a practical framework for prioritizing retention actions based on customer risk, business value, and annualized revenue exposure.
 
 ---
 
@@ -22,12 +22,13 @@ This analysis directly addresses these challenges through data-driven customer i
 
 ## Project Objectives
 
-- **Identify Churn Drivers**: Determine which customer characteristics, behaviors, and service factors most strongly predict churn
-- **Quantify Revenue Exposure**: Calculate annual revenue at risk from churned and at-risk customer segments
-- **Segment High-Risk Customers**: Create actionable customer segments with varying churn probabilities and financial exposure
-- **Statistical Validation**: Ensure all findings are statistically significant and business-meaningful, not due to chance
-- **Strategic Recommendations**: Generate specific, prioritized retention interventions with expected impact
-- **Scalable Analytics Framework**: Develop SQL-based queries and segmentation logic for production deployment
+- **Identify churn-associated patterns** across contract type, tenure, service adoption, internet service, payment method, and customer value.
+- **Validate findings statistically** using appropriate tests and effect-size measures for categorical and numeric variables.
+- **Quantify annualized revenue exposure** for churned customers and high-risk customer groups.
+- **Build actionable customer segments** based on churn probability, contract structure, lifecycle stage, service adoption, and revenue relevance.
+- **Use multivariate modeling** to evaluate churn signals while accounting for multiple customer, service, pricing, and payment factors together.
+- **Create SQL-based business analytics logic** for reusable reporting on revenue exposure, retention performance, and risk segmentation.
+- **Translate insights into retention recommendations** focused on early onboarding, contract migration, payment optimization, and support-service adoption.
 
 ---
 
@@ -36,21 +37,52 @@ This analysis directly addresses these challenges through data-driven customer i
 **Source:** Telecommunications customer data containing 7,043 customers with 21 features
 
 **Key Attributes:**
-- **Customer Demographics**: Gender, age, family status
-- **Service Subscriptions**: Phone service, internet type, protection/support services
-- **Account Details**: Contract type, tenure, monthly/total charges, payment method
+- **Customer profile:** gender, senior citizen status, partner/dependents
+- **Account lifecycle:** tenure, contract type
+- **Services:** phone service, internet service, online security, online backup, device protection, tech support, streaming services
+- **Billing:** monthly charges, total charges, paperless billing, payment method
 - **Target Variable**: Churn (Yes/No) - whether customer left the company
 
-<!-- Insert screenshot: Dataset schema or overview visualization -->
-![Dataset Overview](images/dataset_overview.png)
-
 **Data Quality:** 
-- No duplicates or missing values after cleaning
-- Consistent binary encoding (Yes/No, 0/1)
-- TotalCharges properly handled for customers with zero tenure
-- Ready for statistical analysis with validated metrics
+
+The dataset was validated before analysis to ensure reliability of downstream results.
+
+- `customerID` is unique, so each row represents one customer.
+- No duplicate customer records were identified.
+- No explicit missing values were present after initial checks.
+- `TotalCharges` required numeric conversion because 11 values could not be parsed directly.
+- The `TotalCharges` parsing issue was handled during cleaning before numerical analysis.
+- Key binary fields were consistently encoded.
 
 ---
+
+## Repository Structure
+
+```text
+customer-churn-analysis/
+│
+├── data/
+│   ├── churn_data_raw.csv                 # Raw customer churn dataset
+│   └── churn_data_cleaned.csv             # Cleaned dataset produced by the notebook
+│
+├── images/
+│   └── *.png                              # Exported notebook charts used in the README
+│
+├── notebooks/
+│   └── customer_churn_analysis.ipynb      # Main analytical workflow
+│
+├── sql/
+│   ├── business_metrics.sql               # Revenue and retention queries
+│   ├── churn.db                           # SQLite database for SQL analytics
+│   ├── cohort_analysis.sql                # Contract and lifecycle analysis queries
+│   └── customer_segmentation.sql          # High-risk segmentation queries
+│
+├── .gitignore                             # Version-control exclusions
+├── DATA_DICTIONARY.md                     # Dataset field definitions
+├── README.md                              # Project documentation
+├── config.py                              # Paths and reusable parameters
+└── requirements.txt                       # Project dependencies
+```
 
 ## Methodology & Analytical Workflow
 
@@ -66,10 +98,14 @@ This analysis directly addresses these challenges through data-driven customer i
 - Churn rate overview and initial patterns
 
 **3. Statistical Validation (Categorical Features)**
-- Chi-square tests for categorical variables vs. Churn
-- Cramér's V effect size calculation
-- Automated testing across all relevant features
+
+Categorical and numeric features are tested separately using methods appropriate to their data types.
+
+- Categorical variables are tested using chi-square tests and ranked using **Cramér’s V**.
+- Numeric variables are tested using Mann–Whitney U tests and ranked using **Cohen’s d**.
 - Business interpretation of statistical findings
+
+  ![Churn-Associated Feature Rankings by Statistical Measure](images/churn_associated_feature_rankings_by_statistical_measure.png)
 
 **4. Statistical Validation (Numeric Features)**
 - Normality and variance equality testing
@@ -80,8 +116,11 @@ This analysis directly addresses these challenges through data-driven customer i
 **5. Interaction & Risk Analysis**
 - Feature importance ranking across categorical and numeric variables
 - Service adoption pattern analysis
+![Churn Rate by Service Adoption Level](images/churn_rate_by_service_adoption_level.png)
 - High-risk customer segment identification
 - Contract × Internet Service interaction effects
+
+![Churn Rate: Contract Type × Internet Service Interaction](images/churn_rate_contract_type__internet_service_interaction.png)
 
 **6. Multivariate Insights**
 - Tenure lifecycle analysis with churn curve
@@ -89,276 +128,282 @@ This analysis directly addresses these challenges through data-driven customer i
 - Logistic regression for multivariate feature importance
 - Feature coefficients and odds ratios interpretation
 
-**7. SQL Business Analytics**
-- Revenue impact queries (annual revenue at risk calculation)
-- Retention rates by contract type and tenure bucket
-- High-risk customer segmentation queries
-- Cohort analysis by contract and lifecycle stage
+![Logistic Regression Feature Importance](images/logistic_regression_feature_importance_standardized_predictors.png)
+
+**7. SQL Business Analytics Layer**
+
+The SQL layer covers:
+
+- annualized revenue exposure by churn status
+- retention rate by contract type
+- high-risk customer segmentation
+- revenue exposure by risk segment
 
 **8. Customer Segmentation Framework**
 - Four-tier risk segmentation (Critical, High, Medium, Low)
 - Segment-level business metrics and revenue exposure
 - Strategic recommendations per segment
 
+  ![Revenue at Risk by Customer Segment](images/revenue_at_risk_by_customer_segment.png)
+
 ---
 
-## Key Insights
+## Key Findings
 
-### Strongest Churn Drivers
+### Contract Type Is the Strongest Categorical Churn Signal
 
-<!-- Insert screenshot: Feature Importance Ranking chart -->
-![Feature Importance](images/feature_importance_chart.png)
+Contract structure is the strongest categorical feature associated with churn. Two-year contracts show the highest retention rate, while month-to-month customers show substantially higher churn.
 
-- **Contract Type (Strongest Lever):** Month-to-month contracts show **43% churn** vs. **3% for two-year** - a 15x difference
-- **Tenure (Second Strongest):** New customers (<3 months) churn at **50%**, dropping to **3% after 24 months**
-- **Internet Service:** Fiber optic customers churn **2.2x more** than DSL customers
-- **Payment Friction:** Electronic check users churn **2x more** than automated payment customers
-- **Service Adoption:** Customers with 6 services have **5% churn** vs. **46% for 1 service** - each additional service reduces risk by ~7%
+From the SQL retention analysis:
 
-### Lifecycle Patterns
+| Contract Type | Total Customers | Retained Customers | Retention Rate |
+|---|---:|---:|---:|
+| Two year | 1,695 | 1,647 | 97.17% |
+| One year | 1,473 | 1,307 | 88.73% |
+| Month-to-month | 3,875 | 2,220 | 57.29% |
 
-<!-- Insert screenshot: Churn Curve by Tenure Lifecycle -->
-![Churn Lifecycle](images/churn_lifecycle_curve.png)
+This makes contract structure one of the most important retention-associated signals in the project.
 
-- Churn peaks at **50% in first 3 months** - critical intervention window
-- Sharp decline through 6-12 months
-- **Stabilization at ~3% after 24 months** - long-term customers highly stable
-- **Early intervention is highest-impact retention opportunity**
+### Early Tenure Customers Are the Most Vulnerable
 
-### High-Risk Customer Segments
+Tenure shows the strongest numeric separation between churned and retained customers. Churn is highest in the first months of the customer relationship and declines as tenure increases.
 
-<!-- Insert screenshot: Revenue at Risk by Segment -->
-![Revenue Risk](images/revenue_risk_by_segment.png)
+![Customer Churn Curve Across Tenure Lifecycle](images/customer_churn_curve_across_tenure_lifecycle.png)
 
-| Segment | Customer Count | Churn Rate | Annual Revenue at Risk | Priority |
-|---------|----------------|-----------|------------------------|----------|
-| Critical Risk (MTM + Fiber + <6mo) | 575 | 75% | $2.2M |  Immediate |
-| High Risk (MTM + Fiber/E-check) | 2,096 | 55% | $1.8M |  High |
-| Medium Risk (Various combos) | 2,107 | 25% | $800K |  Medium |
-| Low Risk / Loyal (2-year/1-year + DSL) | 2,265 | 8% | $300K |  Monitor |
+The lifecycle analysis shows:
 
-**Total Revenue at Risk:** $4.9M annually from customers with elevated churn probability
+- churn is highest in the first three months
+- churn declines steadily across tenure buckets
+- customers with more than 24 months of tenure show the lowest churn rate
+- early onboarding and first-month experience are critical retention opportunities
 
-### Service Adoption as Retention Lever
+### Service Adoption Is Associated with Lower Churn
 
-- Service bundling dramatically reduces churn probability
-- Tech Support and Online Security most protective (reduce churn by ~50% when adopted)
-- Customers with 4+ services show **<10% churn** vs. **>40% for minimal service adoption**
-- Significant upsell and cross-sell opportunity among at-risk segments
+Broader service adoption is associated with lower churn overall, particularly for customers using four or more optional services.
 
-### Multivariate Findings
+The pattern is not perfectly linear, but the overall direction is clear: customers with stronger service engagement tend to show lower churn.
 
-After controlling for all variables simultaneously in logistic regression:
-- Contract commitment remains the strongest protective factor (OR=0.15 vs. MTM baseline)
-- Fiber optic service remains strongest risk factor in multivariate context
-- Service protections (Tech Support, Online Security) significant even after accounting for tenure and price
+Key observation:
+
+- customers with six services show approximately **5.3% churn**
+- customers with one service show approximately **45.8% churn**
+
+This suggests that bundled service engagement may be useful for retention, especially when paired with onboarding and support strategies.
+
+### Fiber Optic Risk Depends Strongly on Contract Type
+
+Fiber optic customers do not all behave the same way. The highest churn appears when fiber optic service is combined with month-to-month contracts.
+
+From the interaction analysis:
+
+- Month-to-month + fiber optic customers show the highest churn rate.
+- Fiber optic customers on longer contracts show substantially lower churn.
+- This indicates that internet service type should be interpreted together with contract structure.
+
+### High-Value Customers Still Need Contract Protection
+
+High-value customers are defined as customers in the top quartile of monthly charges or total charges. The analysis shows that high-value customers are not automatically protected from churn.
+
+Among high-value customers, churn risk remains much higher for month-to-month contracts than for one-year or two-year contracts.
+
+![High-Value Customer Churn Rate by Contract Type](images/high_value_customer_churn_rate_by_contract_type.png)
+
+This supports a practical retention strategy: high-value customers on flexible contracts should be prioritized for proactive retention campaigns.
+
+---
+
+## Revenue Impact
+
+The SQL revenue analysis shows that churned customers represent approximately $1.7M in annualized revenue exposure.
+
+| Churn | Customer Count | Avg Monthly Charges | Avg Lifetime Value | Annualized Revenue Exposure |
+|---|---:|---:|---:|---:|
+| No | 5,174 | 61.27 | 2,549.91 | 3,803,829 |
+| Yes | 1,869 | 74.44 | 1,531.80 | 1,669,570 |
+
+Retained customers also show approximately **67% higher lifetime value** than churned customers.
+
+This reinforces the financial importance of retaining high-risk customers before churn occurs.
+
+---
+
+## SQL-Based High-Risk Segmentation
+
+The SQL segmentation identifies broad high-risk customer groups using mutually exclusive logic. Each customer is assigned to the first matching risk condition, which avoids double counting revenue exposure across overlapping risk groups.
+
+| Risk Segment | Customer Count | Avg Monthly Charges | Annualized Revenue Exposure | Churn Rate |
+|---|---:|---:|---:|---:|
+| Month-to-month + Fiber | 2,128 | 87.02 | 2,222,173 | 54.6% |
+| Remaining Fiber + No Support | 434 | 97.05 | 505,437 | 15.7% |
+| Month-to-month + E-check | 543 | 45.64 | 297,389 | 37.8% |
+
+The largest broad revenue exposure segment is **month-to-month fiber optic customers**, with approximately **$2.2M in annualized revenue exposure** and a churn rate of **54.6%**.
+
+The “Remaining Fiber + No Support” segment excludes customers already classified as month-to-month fiber customers, which explains its lower churn rate in this mutually exclusive SQL view.
+
+---
+
+## Final Customer Segmentation Framework
+
+The final segmentation framework refines the analysis into four business-ready customer risk groups.
+
+| Risk Segment | Customer Count | Share of Customers | Churn Rate | Annualized Revenue at Risk | Strategic Priority |
+|---|---:|---:|---:|---:|---|
+| High Risk | 2,096 | 29.8% | 44.70% | 878,749 | High |
+| Critical Risk | 575 | 8.2% | 74.78% | 414,076 | Immediate intervention |
+| Medium Risk | 2,107 | 29.9% | 19.03% | 246,977 | Medium |
+| Low Risk / Loyal | 2,265 | 32.2% | 4.46% | 73,861 | Monitor |
+
+This framework separates two important concepts:
+
+- **High Risk** customers represent the largest revenue exposure in the final segmentation.
+- **Critical Risk** customers represent the highest churn probability and require early intervention.
+
+This distinction is important because the largest financial exposure is not always the same as the highest individual churn probability.
+
+---
+
+## Segment-Specific Retention Strategies
+
+### Critical Risk — New Month-to-Month Fiber Customers
+
+**Profile:** New customers on fiber optic service without contract commitment.  
+**Primary Risk Signal:** Early lifecycle vulnerability combined with high-risk service adoption.  
+**Business Impact:** Highest churn probability among defined segments.  
+**Recommendation:** Prioritize onboarding support, early satisfaction checks, and contract migration incentives.
+
+### High Risk — Month-to-Month Fiber or Electronic Check Customers
+
+**Profile:** Flexible-contract customers with high-speed service or payment friction.  
+**Primary Risk Signal:** Lack of contract commitment combined with service complexity or payment behavior.  
+**Business Impact:** Largest broad revenue exposure among high-risk customer groups.  
+**Recommendation:** Offer contract upgrade paths, payment method optimization, and tech support bundling.
+
+### Medium Risk — Month-to-Month DSL or One-Year Fiber Customers
+
+**Profile:** Customers with partial commitment or moderate service complexity.  
+**Primary Risk Signal:** Some retention protection, but continued exposure to churn triggers.  
+**Business Impact:** Balanced risk-reward segment for targeted campaigns.  
+**Recommendation:** Use service upgrade incentives, loyalty offers, and support-based engagement.
+
+### Low Risk / Loyal — Two-Year Contracts or One-Year DSL Customers
+
+**Profile:** Customers with stronger commitment and more stable service profiles.  
+**Primary Risk Signal:** Minimal; these customers are already relatively well-protected.  
+**Business Impact:** Lowest churn risk and strongest retention foundation.  
+**Recommendation:** Maintain satisfaction through proactive service quality and selective upgrade offers.
+
+---
+
+## Executive Retention Strategy
+
+### Top 3 Business Priorities
+
+1. **Prioritize early lifecycle fiber customers**  
+   Focus onboarding, support, and satisfaction checks on new fiber optic customers with month-to-month contracts.
+
+2. **Protect high-exposure month-to-month fiber customers**  
+   Use contract migration incentives, service support, and targeted retention campaigns for the broadest revenue-at-risk group.
+
+3. **Strengthen service engagement**  
+   Promote support services and bundled adoption where appropriate, as broader service adoption is associated with lower churn.
+
+### Strongest Retention-Associated Signals
+
+The strongest retention-associated signals identified in the analysis are:
+
+- contract commitment
+- longer customer tenure
+- broader service adoption
+- tech support and online security adoption
+- reduced payment friction through more stable payment methods
+
+These signals should be used to prioritize retention actions, not interpreted as isolated causal proof.
 
 ---
 
 ## Strategic Business Recommendations
 
-### Priority 1: Target Critical Risk Segment (Highest Financial Impact)
-**Target:** New month-to-month fiber optic customers (575 customers, 75% churn risk)
-- **Intervention:** Aggressive contract migration incentives within first 3 months
-- **Expected Impact:** If 50% adopt 1-year contracts → 30% churn reduction → ~$300K annual revenue protection
-- **Mechanism:** Sign-up bonuses, discounted rates for 12-month commitment
+### 1. Build an Early Lifecycle Intervention Program
 
-### Priority 2: Optimize High-Risk Revenue (Largest Exposed Population)
-**Target:** Month-to-month + fiber optic customers (2,096 customers, 55% churn, $1.8M risk)
-- **Intervention 1:** Payment method optimization (migrate from e-check to autopay) → 30% churn reduction
-- **Intervention 2:** Tech Support + Online Security bundling with fiber packages → 25% churn reduction
-- **Expected Impact:** Dual intervention → ~$450K annual revenue protection
+Customers in the first few months of tenure show the highest churn rates. Retention efforts should focus on onboarding, satisfaction checks, support availability, and service setup quality during the first 90 days.
 
-### Priority 3: Strengthen Contract Commitment
-**Insight:** Two-year contracts deliver 97% retention vs. 57% for month-to-month
-- **Intervention:** Quarterly upgrade offers to month-to-month customers with 6+ months tenure
-- **Bundling Strategy:** Combine contract upgrades with protective services and cost guarantees
-- **Expected Impact:** 20% contract upgrade rate → ~$600K revenue protection
+### 2. Target Month-to-Month Fiber Customers
 
-### Priority 4: Early Lifecycle Onboarding
-**Insight:** 50% of new customers churn within first 3 months
-- **Intervention:** Personalized onboarding, support outreach in first 30-60 days
-- **Focus:** Fiber optic and high-revenue new customers
-- **Expected Impact:** 15% churn reduction in critical window → ~$400K protection
+Month-to-month fiber optic customers combine elevated churn risk with the largest broad revenue exposure. This group should receive targeted contract migration offers, proactive support, and service experience monitoring.
 
-### Priority 5: High-Value Customer Retention
-**Insight:** Top-quartile spending customers have same churn risk as others without contract protection
-- **Intervention:** Dedicated account management for high-value customers on flexible contracts
-- **Services:** Proactive support, exclusive offers, contract incentives
-- **Expected Impact:** Protect $1M+ in high-value revenue
+### 3. Promote Support and Protection Services
 
----
+Tech support and online security are associated with lower churn. These services can be positioned as part of retention-oriented bundles, especially for high-risk internet customers.
 
-## SQL Business Analytics Layer
+### 4. Reduce Payment Friction
 
-Scalable, production-ready SQL queries enable ongoing monitoring and reporting:
+Customers using electronic check payments show elevated churn risk. Encouraging more stable payment methods may support retention, particularly among flexible-contract customers.
 
-### Revenue Impact Analysis
-```
-Query: Annual revenue at risk by churn status
-Output: Customer count, avg monthly charges, lifetime value, revenue exposure
-```
+### 5. Monitor Segment Performance Over Time
 
-### Retention Performance by Contract
-```
-Query: Retention rates across contract types and tenure buckets
-Output: Contract performance metrics, cohort stability analysis
-```
-
-### Customer Segmentation Logic
-```
-Query: Identify high-risk segments by contract × service × payment combinations
-Output: Segment characteristics, revenue exposure, churn probability scoring
-```
-
-**Location:** Full SQL scripts available in `/sql` folder
-- `business_metrics.sql` - Revenue and retention analysis
-- `customer_segmentation.sql` - Risk scoring and segment identification
-- `cohort_analysis.sql` - Lifecycle and contract performance tracking
-
-<!-- Insert screenshot: SQL Business Metrics sample output -->
-![SQL Analytics](images/sql_business_metrics.png)
-
----
-
-## Power BI Dashboard
-
-### Executive Monitoring Dashboard
-
-**Key Performance Indicators:**
-- Overall churn rate and revenue at risk
-- Churn rate by contract type, tenure bucket, service adoption level
-- Customer count and revenue distribution across risk segments
-- Trend analysis: churn rates and intervention effectiveness
-
-**Segmentation & Targeting:**
-- Interactive segment filters (contract, service, tenure, payment method)
-- High-risk customer lists with contact information for intervention campaigns
-- Cohort performance tracking by sign-up date
-- Service adoption analysis and bundling opportunities
-
-**Retention Monitoring:**
-- Monthly cohort retention curves
-- Intervention campaign performance tracking
-- Contract upgrade conversion rates
-- Service adoption trends among at-risk segments
-
-<!-- Insert screenshot: Executive Dashboard Overview -->
-![Executive Dashboard](images/dashboard_overview.png)
-
-<!-- Insert screenshot: Segmentation Dashboard -->
-![Segmentation Dashboard](images/dashboard_segmentation.png)
-
-<!-- Insert screenshot: Retention Monitoring Dashboard -->
-![Retention Monitoring](images/dashboard_retention_monitoring.png)
-
----
-
-## Project Structure
-
-```
-customer-churn-analysis/
-│
-├── README.md                                    # This file
-├── requirements.txt                             # Python dependencies
-├── config.py                                    # Configuration & parameters
-│
-├── notebooks/
-│   └── customer_churn_analysis.ipynb           # Main analysis notebook
-│       ├── Executive Summary
-│       ├── Data Quality & Cleaning
-│       ├── Statistical Validation (Categorical & Numeric)
-│       ├── Interaction & Risk Analysis
-│       ├── Multivariate Insights
-│       ├── SQL Business Analytics
-│       └── Customer Segmentation Framework
-│
-├── sql/
-│   ├── business_metrics.sql                    # Revenue and retention queries
-│   ├── customer_segmentation.sql               # Risk segmentation logic
-│   └── cohort_analysis.sql                     # Lifecycle analysis
-│
-├── dashboard/
-│   └── ChurnAnalysisDashboard.pbix            # Power BI dashboard file
-│
-├── data/
-│   ├── churn_data_raw.csv                     # Raw dataset
-│   └── churn_data_cleaned.csv                 # Processed dataset
-│
-└── images/
-    ├── feature_importance_chart.png
-    ├── churn_lifecycle_curve.png
-    ├── revenue_risk_by_segment.png
-    ├── dashboard_overview.png
-    └── ... (additional visualizations)
-```
-
----
-
-## Tech Stack
-
-**Data Processing & Analysis:**
-- **Python 3.10+** - Data manipulation and statistical analysis
-- **Pandas** - Data manipulation and analysis
-- **NumPy** - Numerical computations
-- **SciPy** - Statistical testing (chi-square, t-tests, Mann-Whitney U)
-- **Scikit-learn** - Logistic regression and data preprocessing
-
-**Visualization:**
-- **Matplotlib** - Publication-quality charts
-- **Seaborn** - Statistical visualizations
-
-**Database & Analytics:**
-- **SQLite** - Data storage and SQL analytics
-- **SQL** - Business metrics and cohort analysis
-
-**Business Intelligence:**
-- **Power BI** - Executive dashboards and monitoring
-
-**Reproducibility:**
-- **Jupyter Notebook** - Interactive analysis and documentation
-- **Config file** - Centralized parameters and file paths
+The segmentation framework can be reused to monitor changes in customer risk, evaluate retention campaigns, and track whether churn rates decline in priority groups.
 
 ---
 
 ## How to Run the Project
 
 ### Prerequisites
+
 - Python 3.10 or higher
 - pip package manager
+- Jupyter Notebook or VS Code with Jupyter support
 
 ### Setup Instructions
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/[your-username]/customer-churn-analysis.git
-   cd customer-churn-analysis
-   ```
+1. Clone the repository:
 
-2. **Create virtual environment** (recommended)
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
+```bash
+git clone https://github.com/joana-pinto/customer-churn-analysis.git
+cd customer-churn-analysis
+```
 
-3. **Install dependencies**
-   ```bash
-   pip install -r requirements.txt
-   ```
+2. Create and activate a virtual environment:
 
-4. **Run the analysis notebook**
-   - Open `notebooks/customer_churn_analysis.ipynb` in Jupyter Notebook
-   - Run cells sequentially from top to bottom
-   - Analysis includes data quality checks, statistical validation, and SQL analytics
+```bash
+python -m venv venv
+```
 
-5. **View Power BI Dashboard** (optional)
-   - Open `dashboard/ChurnAnalysisDashboard.pbix` in Power BI Desktop
-   - Connect to the SQLite database or processed CSV files
-   - Explore interactive dashboards with filtering and drill-down capabilities
+On Windows:
 
-### Expected Execution Time
-- Full notebook analysis: ~5-10 minutes
-- All sections run automatically with no manual intervention required
+```bash
+venv\Scripts\activate
+```
+
+On macOS/Linux:
+
+```bash
+source venv/bin/activate
+```
+
+3. Install dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+4. Run the notebook:
+
+```text
+notebooks/customer_churn_analysis.ipynb
+```
+
+Run the notebook from top to bottom. It loads the raw data, performs cleaning, saves the cleaned dataset, generates visualizations into the `images/` folder, runs statistical analysis, builds SQL outputs, and creates the final segmentation framework.
+
+### Expected Outputs
+
+Running the notebook produces:
+
+- cleaned dataset: `data/churn_data_cleaned.csv`
+- SQLite database: `sql/churn.db`
+- generated charts in `images/`
+- displayed statistical and business analysis tables
+- final customer segmentation framework
 
 ---
 
@@ -392,14 +437,16 @@ If recommended interventions are implemented:
 
 ## Author
 
-**Portfolio Project:** End-to-end business analytics case study demonstrating statistical rigor, SQL-based business intelligence, and strategic data storytelling.
+**Portfolio Project:** End-to-end customer churn business analytics case study.
 
-**Skills Demonstrated:**
-- Exploratory Data Analysis (EDA) and Data Quality Assessment
-- Statistical Testing (Chi-square, t-tests, Mann-Whitney U, effect sizes)
-- Multivariate Modeling (Logistic Regression)
-- SQL Business Analytics and Data Aggregation
-- Customer Segmentation and Risk Scoring
-- Data Visualization and Executive Presentation
-- Business Strategy and Revenue Impact Analysis
+### Skills Demonstrated
+
+- Data quality assessment and preprocessing
+- Exploratory data analysis
+- Statistical testing and effect-size interpretation
+- Churn segmentation and revenue exposure analysis
+- Logistic regression for interpretable multivariate modeling
+- SQL-based business analytics
+- Data visualization and executive storytelling
+- Business recommendation development
 
